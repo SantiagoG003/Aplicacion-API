@@ -1,27 +1,20 @@
-import UI as ui
-import Api as api
+from Api import obtener_informacion
+from UI import seleccion_usuario, mostrar_propiedades_cultivo
 
 def main():
-    try:
-        departamento = ui.ingresar_departamento()
-        municipio = ui.ingresar_municipio()
-        cultivo = ui.ingresar_cultivo()
-        registro = ui.numero_registros()
+    print("Bievenido al programa Análisis de Laboratorio Suelos en Colombia ")
+    informacion_df = obtener_informacion()
 
-        resultados = api.obtener_resultados_api(departamento, municipio, cultivo, registro)
+    departamento, municipio, cultivo = seleccion_usuario()
 
-        print("\nResultados obtenidos:")
-        if not resultados.empty:
-            for idx, row in resultados.iterrows():
-                print(f"\nRegistro {idx + 1}:")
-                print(f"Departamento: {row['departamento']}")
-                print(f"Municipio: {row['municipio']}")
-                print(f"Cultivo: {row['cultivo']}")
-                # Imprime otras propiedades relevantes
-        else:
-            print("No se encontraron resultados para los criterios especificados.")
-    except Exception as e:
-        print("Ocurrió un error:", e)
+   
+    filtro = (informacion_df['departamento'] == departamento) & \
+             (informacion_df['municipio'] == municipio) & \
+             (informacion_df['cultivo'] == cultivo)
+
+    propiedades_cultivo = informacion_df[filtro]
+
+    mostrar_propiedades_cultivo(propiedades_cultivo)
 
 if __name__ == "__main__":
     main()
